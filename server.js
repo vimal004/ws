@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    if (clientsToExecutives[socket.id]) {
+    if (clientsToExecutives[socket.id] && !msg.role === "user") {
       // Check if it's a client and send the message to their assigned executive
       const assignedExecutive = clientsToExecutives[socket.id];
       io.to(assignedExecutive).emit("message", msg);
