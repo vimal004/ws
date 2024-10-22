@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    if (availableExecutives.length > 0 && msg.role === "user") {
+    if (availableExecutives.length > 0 && msg.role === "user" && !clientsToExecutives[socket.id]) {
       // Assign an executive to the client
       const assignedExecutive = availableExecutives.shift(); // Remove the executive from the available list
       clientsToExecutives[socket.id] = assignedExecutive;
