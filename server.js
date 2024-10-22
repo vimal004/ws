@@ -68,9 +68,27 @@ io.on("connection", (socket) => {
       });
     }
 
+    if (availableExecutives.length > 0 && msg.role === "user") {
+      // Assign an executive to the client
+      const assignedExecutive = availableExecutives.shift(); // Remove the executive from the available list
+      clientsToExecutives[socket.id] = assignedExecutive;
+      io.to(assignedExecutive).emit("clientAssigned", socket.id); // Notify the executive of the client assignment
+      // Notify the client and executive of the connection
+      io.to(socket.id).emit("message", {
+        role: "Support",
+        content: `You have been connected to an executive`,
+      });
+      io.to(assignedExecutive).emit("message", {
+        role: "Support",
+        content: `You have been assigned a client: ${socket.id}`,
+      });
+    }
+
     if (msg.role === "executive") {
       // Check if it's an executive and send the message to their assigned client
-      const assignedClient = Object.keys(clientsToExecutives).find(clientID => clientsToExecutives[clientID] === socket.id);
+      const assignedClient = Object.keys(clientsToExecutives).find(
+        (clientID) => clientsToExecutives[clientID] === socket.id
+      );
       io.to(assignedClient).emit("message", msg);
     }
 
